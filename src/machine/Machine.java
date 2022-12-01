@@ -10,7 +10,22 @@ public class Machine {
     private int disposableCups = 9;
     private int moneyAvailable = 550;
 
+    enum Coffee {
+        ESPRESSO(250, 0, 16, 4),
+        LATTE(350, 75, 20, 7),
+        CAPPUCCINO(200, 100, 12, 6);
+        int water;
+        int milk;
+        int beans;
+        int price;
+        Coffee(int water, int milk, int beans, int price) {
+            this.water = water;
+            this.milk = milk;
+            this.beans = beans;
+            this.price = price;
+        }
 
+    }
     public void displayInfo() {
         System.out.println("The coffee machine has:");
         System.out.printf("%d ml of water\n", waterQuantity);
@@ -28,7 +43,7 @@ public class Machine {
             //String input = sc.nextLine();
             switch (sc.nextLine()) {
                 case "buy":
-                    buyCoffee(sc);
+                    chooseCoffee(sc);
                     break;
                 case "fill":
                     fillMachine(sc);
@@ -48,23 +63,17 @@ public class Machine {
         }
     }
 
-    private void buyCoffee(Scanner sc) {
+    private void chooseCoffee(Scanner sc) {
         System.out.println("What do you want to buy? 1 - espresso, 2 - latte, 3 - cappuccino:");
         switch (sc.nextLine()) {
             case "1":
-                if(checkEspresso()) {
-                    buyEspresso();
-                }
+                buyCoffee(Coffee.ESPRESSO);
                 break;
             case "2":
-                if (checkLatte()) {
-                    buyLatte();
-                }
+                buyCoffee(Coffee.LATTE);
                 break;
             case "3":
-                if (checkCappuccino()) {
-                    buyCappuccino();
-                }
+                buyCoffee(Coffee.CAPPUCCINO);
                 break;
             case "back":
                 break;
@@ -73,47 +82,18 @@ public class Machine {
         }
     }
 
-    private boolean checkEspresso() {
+    private boolean checkCoffee(Coffee coffee) {
         StringBuilder missing = new StringBuilder("Sorry! Not enough:");
         boolean enoughResources = true;
-        if (waterQuantity < 250) {
+        if (waterQuantity < coffee.water) {
             missing.append("\n\twater");
             enoughResources = false;
         }
-        if (coffeeBeansQuantity < 16) {
-            missing.append("\n\tcoffee beans");
-            enoughResources = false;
-        }
-        if (disposableCups < 1) {
-            missing.append("\n\tcups");
-            enoughResources = false;
-        }
-        if (enoughResources) {
-            System.out.println("I have enough resources, making you a coffee!");
-        } else {
-            System.out.println(missing);
-        }
-        return enoughResources;
-    }
-    private void buyEspresso() {
-        waterQuantity -= 250;
-        coffeeBeansQuantity -= 16;
-        disposableCups -=1;
-        moneyAvailable += 4;
-    }
-
-    private boolean checkLatte() {
-        StringBuilder missing = new StringBuilder("Sorry! Not enough:");
-        boolean enoughResources = true;
-        if (waterQuantity < 350) {
-            missing.append("\n\twater");
-            enoughResources = false;
-        }
-        if (milkQuantity < 75) {
+        if (milkQuantity < coffee.milk) {
             missing.append("\n\tmilk");
             enoughResources = false;
         }
-        if (coffeeBeansQuantity < 20) {
+        if (coffeeBeansQuantity < coffee.beans) {
             missing.append("\n\tcoffee beans");
             enoughResources = false;
         }
@@ -128,46 +108,14 @@ public class Machine {
         }
         return enoughResources;
     }
-    private void buyLatte() {
-        waterQuantity -= 350;
-        milkQuantity -= 75;
-        coffeeBeansQuantity -= 20;
-        disposableCups -=1;
-        moneyAvailable += 7;
-    }
-
-    private boolean checkCappuccino() {
-        StringBuilder missing = new StringBuilder("Sorry! Not enough:");
-        boolean enoughResources = true;
-        if (waterQuantity < 200) {
-            missing.append("\n\twater");
-            enoughResources = false;
+    private void buyCoffee(Coffee coffee) {
+        if (checkCoffee(coffee)) {
+            waterQuantity -= coffee.water;
+            milkQuantity -= coffee.milk;
+            coffeeBeansQuantity -= coffee.beans;
+            disposableCups -= 1;
+            moneyAvailable += coffee.price;
         }
-        if (milkQuantity < 100) {
-            missing.append("\n\tmilk");
-            enoughResources = false;
-        }
-        if (coffeeBeansQuantity < 12) {
-            missing.append("\n\tcoffee beans");
-            enoughResources = false;
-        }
-        if (disposableCups < 1) {
-            missing.append("\n\tcups");
-            enoughResources = false;
-        }
-        if (enoughResources) {
-            System.out.println("I have enough resources, making you a coffee!");
-        } else {
-            System.out.println(missing);
-        }
-        return enoughResources;
-    }
-    private void buyCappuccino() {
-        waterQuantity -= 200;
-        milkQuantity -= 100;
-        coffeeBeansQuantity -= 12;
-        disposableCups -=1;
-        moneyAvailable += 6;
     }
 
     private void fillMachine(Scanner sc) {
